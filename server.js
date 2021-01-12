@@ -67,7 +67,7 @@ function createNewAnimal(body, animalsArray) {
     
     const animal = body;
 
-    animalsArray.push(animal);
+    animals.push(animal);
     //fs method below writes to animals.json
     fs.writeFileSync(
         // we use path.join to join the value of __dirname which 
@@ -112,6 +112,18 @@ app.get('/api/animals', (req, res) => {
     }
     res.json(results);
 });
+/*
+ an additions .get route using req.params : app.get('<route>/:<parameterName>',...
+ paramater routes MUST come AFTER the other .get route.  
+ */
+app.get('/api/animals/:id', (req, res) => {
+    const result = findById(req.params.id, animals);
+    if(result) {
+        res.json(result);
+    } else {
+        res.send(404);
+    }        
+});
 
 app.post('/api/animals', (req, res) => {
     //set id based on what the next index of the array will be
@@ -127,18 +139,6 @@ app.post('/api/animals', (req, res) => {
         console.log(req.body);
         res.json(animal);
     }
-});
-/*
- an additions .get route using req.params : app.get('<route>/:<parameterName>',...
- paramater routes MUST come AFTER the other .get route.  
- */
-app.get('/api/animals/:id', (req, res) => {
-    const result = findById(req.params.id, animals);
-    if(result) {
-        res.json(result);
-    } else {
-        res.send(404);
-    }        
 });
 
 app.listen(PORT, () => {
