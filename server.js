@@ -1,3 +1,8 @@
+//thjs will enable us to write to the imported animals.json file
+const fs = require('fs');
+const path = require('path');
+
+
 //creates a route that the front end can request data from.
 const { animals } = require('./data/animals.json');
 
@@ -6,6 +11,11 @@ const express = require('express');
 const PORT = process.env.PORT || 3001;
 
 const app = express();
+
+//parse incoming string or array data
+app.use(express.urlencoded({ extended: true }));
+//parse incoming JSON data
+app.use(express.json());
 
 function filterByQuery(query, animalsArray) {
     let personalityTraitsArray = [];
@@ -53,6 +63,47 @@ function findById(id, animalsArray) {
     return result;
 }
 
+function createNewAnimal(body, animalsArray) {
+    
+    const animal = body;
+
+    animalsArray.push(animal);
+    //fs method below writes to animals.json
+    fs.writeFileSync(
+        // we use path.join to join the value of __dirname which 
+        //represents the directory of the file we
+        //execute code in, with the path to the animals.json file
+        path.join(__dirname, './data/animals.json'),
+        //we need to save the Javascript array data as JSON, so we use JSON.stringify()
+        //to convert it.  'null' argument means we dont want to edit any of our existing data
+        // if we did we could pass something in instead of 'null'.  '2' indicates we want
+        //to create white space btw our values to make it more readable.  If we left these
+        // two args out animals.json would work but would be hard to read.
+        JSON.stringify({ animals: animalsArray }, null, 2) 
+    );    
+    return animal;
+}
+
+function validateAnimal(animal) {
+    if(!animal.name || typeof animal.name !== 'string') {
+        console.log('You did not enter a valid Name of animal!');
+        return false;
+    }
+    if(!animal.species || typeof animal.species !== 'string') {
+        console.log('You did not enter valid Species of animal!');
+        return false;
+    }
+    if(!animal.diet || typeof animal.diet !== 'string') {
+        console.log('You did enter a valid Diet for the animal');
+        return false;
+    }
+    if(!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
+        console.log('You did not enter a valid personality trait!');
+        return false;
+    }
+    return true;
+}
+
 //add the route
 app.get('/api/animals', (req, res) => {
     let results = animals;
@@ -60,6 +111,22 @@ app.get('/api/animals', (req, res) => {
         results = filterByQuery(req.query, results);
     }
     res.json(results);
+});
+
+app.post('/api/animals', (req, res) => {
+    //set id based on what the next index of the array will be
+    req.body.id = animals.length.toString();
+    
+    //if any data in req.body is incorrect, send 400 error back
+    if (!validateAnimal(req.body)) {
+        res.status(400).send('The animal data is not properly formatted.');
+    } else {
+        //req.body is where our incoming content will be
+        const animal = createNewAnimal(req.body, animals);
+        //add animal to json file and animals array in this function
+        console.log(req.body);
+        res.json(animal);
+    }
 });
 /*
  an additions .get route using req.params : app.get('<route>/:<parameterName>',...
