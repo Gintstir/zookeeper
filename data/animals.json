@@ -1,5 +1,5 @@
 {
-  "animals": [
+  "animalsArray": [
     {
       "id": "0",
       "name": "Spindle",
@@ -135,6 +135,27 @@
         "zany"
       ],
       "id": "13"
+    },
+    {
+      "name": "Jorik Bjornorsson",
+      "species": "Polar Bear",
+      "diet": "carnivore",
+      "personalityTraits": [
+        "hungry",
+        "loving"
+      ],
+      "id": "14"
+    },
+    {
+      "name": "Alfie",
+      "species": "Tiger",
+      "diet": "carnivore",
+      "personalityTraits": [
+        "zany",
+        "loving",
+        "goofy"
+      ],
+      "id": "15"
     }
   ]
 }
