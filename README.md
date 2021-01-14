@@ -1,3 +1,3 @@
 # zookeeper
 
-https://secret-depths-96233.herokuapp.com/api/animals
+https://secret-depths-96233.herokuapp.com/  to test deployment
