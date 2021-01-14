@@ -12,6 +12,11 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 
+//midcleware that tells the server to look in the public folder for the js and css files?
+//instructs the server to make certain files readily available and to not gate them 
+//behind a server endpoint: 
+app.use(express.static('public'));
+
 //parse incoming string or array data
 app.use(express.urlencoded({ extended: true }));
 //parse incoming JSON data
@@ -85,20 +90,16 @@ function createNewAnimal(body, animalsArray) {
 }
 
 function validateAnimal(animal) {
-    if(!animal.name || typeof animal.name !== 'string') {
-        console.log('You did not enter a valid Name of animal!');
+    if(!animal.name || typeof animal.name !== 'string') {        
         return false;
     }
-    if(!animal.species || typeof animal.species !== 'string') {
-        console.log('You did not enter valid Species of animal!');
+    if(!animal.species || typeof animal.species !== 'string') {        
         return false;
     }
-    if(!animal.diet || typeof animal.diet !== 'string') {
-        console.log('You did enter a valid Diet for the animal');
+    if(!animal.diet || typeof animal.diet !== 'string') {       
         return false;
     }
-    if(!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
-        console.log('You did not enter a valid personality trait!');
+    if(!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {        
         return false;
     }
     return true;
@@ -140,6 +141,26 @@ app.post('/api/animals', (req, res) => {
         res.json(animal);
     }
 });
+
+//route from server.js to index.html in the public directory- the '/' points us
+// to the root route of the server.  This is the root route used to create a homepage
+// for the server.  
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+//this points to the animals.html file
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+//this route points to the zookeeper.js file:
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+  });
+
 
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
